@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{{title}}</title>
+	</head>
+	<body>
+		<h2>{{title}}</h2>
+		<h4 style="color:red;">{{subtitle}}</h4>
+			
+		<div id="navbar">
+		{{#url}}
+			<a href="{{ link }}"> {{linkName}} </a>
+		{{/url}}
+		</div>
+		<br />
+		
+		<form action="login/post" method="POST">
+			Username: <input type="text" name="username" id="username" maxlength="20"><br>
+			Password: <input type="password" name="password" id="password" maxlength="20"><br>
+			<input type="submit" id="submit" value="Login">
+		</form>
+	</body>
+</html>

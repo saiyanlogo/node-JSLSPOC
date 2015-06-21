@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{{ title }}</title>
+		<link rel='stylesheet' href='/stylesheets/style.css' />
+	</head>
+	<body> 
+		<div id="navbar">
+			{{#url}}
+				<a href="{{ link }}"> {{linkName}} </a> &nbsp; | &nbsp;
+			{{/url}}
+		</div>
+		<br />
+		<form action= "profileDesc/post" method = "POST">
+			<textarea id="profileDesc" name="profileDesc" rows='35' cols= '75' placeholder="Type your Bio!" maxlength="500"></textarea>
+			<input type="Submit" value="Update" />
+		</form>
+		<p>500 Character Limit</p>
+	</body>
+</html>
+

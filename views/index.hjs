@@ -1,0 +1,22 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body> 
+    <h1>{{ title }}</h1>
+    <p>bla bla bla</p>
+	
+	<div id="navbar">
+	{{#url}}
+		<a href="{{ link }}"> {{linkName}} </a> &nbsp; | &nbsp;
+	{{/url}}
+	</div>
+	
+	<script>
+	</script>	
+  </body>
+</html>
+

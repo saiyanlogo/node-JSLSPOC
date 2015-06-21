@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{{title}}</title>
+	</head>
+	<body>
+		<h2>{{title}}</h2>
+		<h4 style="color:red;">{{subtitle}}</h4>
+		
+		<div id="navbar">
+		{{#url}}
+			<a href="{{ link }}"> {{linkName}} </a>
+		{{/url}}
+		</div>
+		<br />
+		
+		<form action="privilege/post" method="POST">
+			Username: <input type="text" name="username" id="username" maxlength="20" onkeyup="removeChars();" onkeypress="removeChars();"><br>
+			Action: 		<select name="privilege" id="privilege">
+								<option value="user">Unban or Unmod</option>
+								<option value="banned">Ban</option>
+								<option value="mod">Make Mod</option>
+								<option value="admin">Make Admin</option>
+								<option value="dev">Make Dev</option>
+							</select>
+			Reason:	<input type="textbox" name="reason" id="reason" maxlength="500">
+			
+			<input type="submit" id="submit" value="Submit" style="display:none;">
+		</form>
+		
+		<div id="registrationConsole">
+			<div id="usernameRequirements" style="color:red;">Username must be at least 4 characters</div>
+			<div id="specialCharactersRequirements"></div>
+		</div>
+		
+		<script>
+				var username = document.getElementById("username");
+				var reason = document.getElementById("reason");
+				regexSpecialChars = new RegExp(/[^A-Za-z0-9-_]/gi);
+				regexSpecialCharsReason = new RegExp(/([()[{*+.$^\\|?])/g);
+				
+				function removeChars() {
+					if(typeof username.value != 'undefined' && typeof username.value != 'null') {
+						username.value = username.value.replace(/[^A-Za-z0-9-_]/gi, '');
+					}
+					
+					if(typeof reason.value != 'undefined' && typeof reason.value != 'null') {
+						reason.value = reason.value.replace(/([()[{*+.$^\\|?])/g, '\\$1');
+					}
+					
+					if((regexSpecialChars.test(username.value) == true)) {
+						document.getElementById("specialCharactersRequirements").innerHTML = "<b style='color:red;'>Special Characters, excluding dashes and underscores, can not be used username or reason fields.</b>";
+						document.getElementById("submit").style.display = "none";
+					} else if (regexSpecialChars.test(username.value) == false){
+						document.getElementById("specialCharactersRequirements").innerHTML = "";
+						document.getElementById("submit").style.display = "initial";
+					}
+					
+					if((regexSpecialCharsReason.test(reason.value) == true)) {
+						document.getElementById("specialCharactersRequirements").innerHTML = "<b style='color:red;'>Special Characters, excluding dashes and underscores, can not be used username or reason fields.</b>";
+						document.getElementById("submit").style.display = "none";
+					} else if (regexSpecialCharsReason.test(reason.value) == false){
+						document.getElementById("specialCharactersRequirements").innerHTML = "";
+						document.getElementById("submit").style.display = "initial";
+					}
+					
+					if(username.value.length < 4 || username.value.length > 20) {
+						document.getElementById("submit").style.display = "none";
+						document.getElementById("usernameRequirements").style.color = "red";
+					} else if(username.value.length >= 4 && username.value.length <= 20) {
+						document.getElementById("usernameRequirements").style.color = "green";
+					}
+				}
+		</script>
+	</body>
+</html>
