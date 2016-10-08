@@ -5,7 +5,7 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
 	
 	if(typeof req.session.name != 'undefined') {
-		delete req.session.name;
+		req.session.destroy();
 		res.send('logged out! <a href="../">Click to go back</a>');
 	} else {
 		throw new Error("You're already logged out!");

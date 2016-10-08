@@ -38,10 +38,14 @@
 		</div>
 	</div>
 	
+	<script>
+	var room = "{{ room }}";
+	</script>
+	
 	{{#scripts}}
 		<script src="{{scriptSrc}}"></script>
 	{{/scripts}}
 	<script src="http://localhost:3000/socket.io/socket.io.js"></script>
-	<script src="http://localhost:3000/javascripts/clientSocket.js"></script>
+	<script src="http://localhost:3000/clientSocket.js"></script>
   </body>
 </html>

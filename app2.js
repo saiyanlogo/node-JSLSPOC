@@ -1,15 +1,15 @@
 var express = require('express');
-var session = require('express-session');
+var sessionExpress = require('express-session');
+var sharedsession = require("express-socket.io-session");
 var multer = require('multer');
 var app = express(); 
 var http = require('http');
 var server = http.createServer(app);
 
 var io = require('socket.io')(server);
-var sockets = require('./sockets/sockets.js');
 
 var ipfilter = require('express-ipfilter');
-var mongoStore = require('connect-mongo')(session);
+var mongoStore = require('connect-mongo')(sessionExpress);
 
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -19,7 +19,7 @@ var bodyParser = require('body-parser');
 var crypto = require('crypto');
 
 var mongoose = require('mongoose');
-mongoose.connect("mongodb://localhost/projclekba");
+mongoose.connect("mongodb://localhost/lit");
 
 var routes = require('./routes/index');
 var register = require('./routes/register');
@@ -40,6 +40,14 @@ var user = require('./routes/users');
 var ips = []; 
 app.use(ipfilter(ips, {mode : 'allow', errorCode : 403, errorMessage : 'You\'ve been banned! Email us for help.'}));
 
+function redirectSec(req, res, next) {
+  if (req.headers['x-forwarded-proto'] == 'http') {
+      res.redirect('https://' + req.headers.host + req.path);
+  } else {
+      return next();
+  }
+}
+
 var port = '3000';
 app.set('port', port);
 server.listen(port);
@@ -51,21 +59,22 @@ app.set('view engine', 'hjs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
-var sessionStore = new mongoStore({
-					db: 'projclekbaSessions',
-					host: 'localhost'
-				})
 
+var session = sessionExpress({
+				secret: 'spaghetti',
+				store: new mongoStore({
+					db: 'litSessions',
+					host: 'localhost'
+				}),
+				saveUninitialized: true,
+				resave: true,	
+				});
+				
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser('spaghetti'));
-app.use(session({
-				secret: 'spaghetti',
-				store: sessionStore,
-				saveUninitialized: true,
-				resave: true,	
-				}));
+app.use(session);
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -92,7 +101,30 @@ app.use('/settings/profileDesc', profileDesc);
 app.use('/settings/profileDesc/post', profileDescPost);
 
 //Socket Server
-sockets(io);
+var io = require('socket.io')(server);
+var p2p = require('socket.io-p2p-server').Server;
+
+io.use(sharedsession(session));
+
+io.on("connection", function(socket){
+	console.log(socket.handshake.session);
+	
+	socket.on("room", function(data){
+		
+		socket.join(data);
+		console.log("user joined room -> " + data);
+	});
+	
+	socket.on('chatData', function(data){
+		data.username = socket.handshake.session.usernameAsTyped;
+		io.in(data.room).emit('chatData', data);
+		console.log(data);
+	});
+	
+	socket.on('disconnect', function(){
+		delete socket;
+	})
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

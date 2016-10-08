@@ -3,9 +3,13 @@ var sockets = function (io, req, res) {
 	
 	room.on('connection', function(socket){	
 		setTimeout(function() {
-			socket.join(req.session.roomChannel);
-			room.to(req.session.roomChannel).emit('chatData', '<b>' + req.session.name + ' has joined!</b>');
-			console.log(req.session.name + ' has joined ' + req.session.roomChannel + ' with ID ' + socket.id);
+			try {
+				socket.join(req.session.roomChannel);
+				room.to(req.session.roomChannel).emit('chatData', '<b>' + req.session.name + ' has joined!</b>');
+				console.log(req.session.name + ' has joined ' + req.session.roomChannel + ' with ID ' + socket.id);
+			} catch(e) {
+				console.log(e);
+			};
 		}, 3000);
 		
 		socket.on('chatData', function(data){
